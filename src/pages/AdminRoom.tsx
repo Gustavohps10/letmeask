@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import logo from '../assets/images/logo.svg'
 import deleteImg from '../assets/images/delete.svg'
@@ -19,6 +19,7 @@ type RoomParams = {
 
 export function AdminRoom(){
     // const {user} = useAuth();
+    const navigate = useNavigate();
     const params = useParams() as RoomParams;
     const roomId = params.id;
     const {questions, title} = useRoom(roomId);
@@ -28,6 +29,13 @@ export function AdminRoom(){
             await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
         }
     }
+
+    async function handleEndRoom() {
+        await database.ref(`rooms/${roomId}`).update({
+            endedAt: new Date(),
+        });
+        navigate("/");
+    }
     
     return(
         <div id="page-room">
@@ -36,7 +44,10 @@ export function AdminRoom(){
                     <img src={logo} alt="Letmeask" />
                     <div className='buttons'>
                         <RoomCode code={roomId}></RoomCode>
-                        <Button isOutlined>Encerrar Sala</Button>
+                        <Button 
+                            isOutlined
+                            onClick={handleEndRoom}
+                        >Encerrar Sala</Button>
                     </div>
                 </div>
             </header>
