@@ -2,6 +2,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import logo from '../assets/images/logo.svg'
 import deleteImg from '../assets/images/delete.svg'
+import checkImg from '../assets/images/check.svg'
+import answerImg from '../assets/images/answer.svg'
 
 import { Button } from '../components/Button';
 import { Question } from '../components/Question';
@@ -36,6 +38,18 @@ export function AdminRoom(){
         });
         navigate("/");
     }
+
+    async function handleCheckQuestionAsAnswered(questionId: string) {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+            isAnswered: true
+        });
+    }
+
+    async function handleHighlightQuestion(questionId: string) {
+        await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+            isHighlighted: true
+        });
+    }
     
     return(
         <div id="page-room">
@@ -68,7 +82,32 @@ export function AdminRoom(){
                             key={question.id}
                             author={question.author} 
                             content={question.content}
+                            isAnswered={question.isAnswered}
+                            isHighlighted={question.isHighlighted}
                         >
+                        
+                        {!question.isAnswered && (
+                            <>
+                                <button
+                                    className='check-button'
+                                    type='button'
+                                    arial-label='Marcar como respondida'
+                                    onClick={() => handleCheckQuestionAsAnswered(question.id)}
+                                >
+                                    <img src={checkImg} alt="" />
+                                </button>
+        
+                                <button
+                                    className='highlight-button'
+                                    type='button'
+                                    arial-label='Dar destaque a pergunta'
+                                    onClick={() => handleHighlightQuestion(question.id)}
+                                >
+                                    <img src={answerImg} alt="Check" />
+                                </button> 
+                            </>
+                        )}
+                        
 
                         <button
                             className='delete-button'
