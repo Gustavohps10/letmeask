@@ -14,17 +14,25 @@ import { useRoom } from '../hooks/useRoom';
 
 import '../styles/room.scss'
 import { database } from '../services/firebse';
+import { useEffect } from 'react';
 
 type RoomParams = {
 	id: string;
 };
 
 export function AdminRoom(){
-    // const {user} = useAuth();
+    const {user} = useAuth();
     const navigate = useNavigate();
     const params = useParams() as RoomParams;
     const roomId = params.id;
-    const {questions, title} = useRoom(roomId);
+    const {questions, title, authorId} = useRoom(roomId);
+
+    useEffect(() =>{
+        if(authorId && user?.id && authorId != user?.id){
+            navigate(`/rooms/${roomId}`);
+        }
+    }, [user?.id, authorId ])
+    
 
     async function handleDeleteQuestion(questionId: string) {
         if(window.confirm('Você tem certeza que deseja excluir essa pergunta?')){
